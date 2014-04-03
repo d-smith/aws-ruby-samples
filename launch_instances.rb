@@ -11,12 +11,9 @@ end
 ec2Client = AWS::EC2::Client::new
 
 #
-# Grab the subnets from the VPM
+# Get the subnets from the VPC. Here we assume the public subnet is in us-east-1d, and the private
+# subnet is in us-east-1c
 #
-vpc_infos = ec2Client.describe_vpcs(:vpc_ids => [vpc_id])[:vpc_set]
-
-puts "vpc info array #{vpc_infos}"
-
 subnet_infos = ec2Client.describe_subnets({
 	:filters => [
 		{
@@ -29,11 +26,10 @@ subnet_infos = ec2Client.describe_subnets({
 
 public_subnet = (subnet_infos.select { |s| s[:availability_zone] == "us-east-1d"}).first[:subnet_id]
 private_subnet = (subnet_infos.select { |s| s[:availability_zone] == "us-east-1c"}).first[:subnet_id]
-puts "public subnet id is #{public_subnet}" 
-puts "private subnet id is #{private_subnet}"
-#puts public_subnet.first[:subnet_id]
-#puts subnet_infos.select { |s| s[:availability_zone] == "us-east-1c"}
 
+#
+# Get the security groups for launching public and private instances
+#
 sg_infos = ec2Client.describe_security_groups({
 	:filters => [
 		{
@@ -47,13 +43,11 @@ launch_sg_id = (sg_infos.select { |sg| sg[:group_name] == "launch-sg"}).first[:g
 private_subnet_launch_sg_id = (sg_infos.select { |sg| sg[:group_name] == "private-subnet-launch-sg"}).first[:group_id]
 
 
-#puts sg_infos
 
 ec2 = AWS::EC2::new
 instances = ec2.instances
-#instances.each {|i| puts i.id}
 
-# Create instance in the public subnet
+# Create instance in the public subnet using the Ubuntu 12.04 AMI
 ec2.instances.create({
 	:image_id => "ami-59a4a230",
 	:key_name => "FidoKeyPair",
@@ -63,7 +57,7 @@ ec2.instances.create({
 	:associate_public_ip_address => true
 })
 
-# Create instance in the private subnet
+# Create instance in the private subnet using the Ubuntu 12.04 AMI
 ec2.instances.create({
 	:image_id => "ami-59a4a230",
 	:key_name => "FidoKeyPair",

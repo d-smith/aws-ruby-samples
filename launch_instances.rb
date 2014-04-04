@@ -52,7 +52,7 @@ ec2.instances.create({
 	:image_id => "ami-59a4a230",
 	:key_name => "FidoKeyPair",
 	:security_group_ids => [launch_sg_id],
-	:instance_type => "m1.small",
+	:instance_type => "t1.micro",
 	:subnet => public_subnet,
 	:associate_public_ip_address => true
 })
@@ -62,7 +62,7 @@ ec2.instances.create({
 	:image_id => "ami-59a4a230",
 	:key_name => "FidoKeyPair",
 	:security_group_ids => [private_subnet_launch_sg_id],
-	:instance_type => "m1.small",
+	:instance_type => "t1.micro",
 	:subnet => private_subnet,
-	:private_ip_address => "10.0.1.99"	
+	:private_ip_address => "10.0.1.99"
 })

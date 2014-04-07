@@ -10,7 +10,7 @@ ec2.regions.each { |region| puts region.name }
 vpc = ec2Client.create_vpc({ :cidr_block => "10.0.0.0/16"})[:vpc]
 puts "created vpc #{vpc[:vpc_id]}"
 
-#Create public subnet 
+#Create public subnet
 subnet1 = ec2Client.create_subnet({
 	:vpc_id => vpc[:vpc_id],
 	:cidr_block => "10.0.0.0/24",
@@ -47,11 +47,26 @@ rtAssociation = ec2Client.associate_route_table({
 
 puts "Associated route to subnet - #{rtAssociation}"
 
-# Create a private subnet
+# Create two private subnets (RDS needs two availability zones), and tag them
+# as private
 privateSubnet = ec2Client.create_subnet({
 	:vpc_id => vpc[:vpc_id],
 	:cidr_block => "10.0.1.0/24",
-	:availability_zone => "us-east-1c"		
+	:availability_zone => "us-east-1c"
+})[:subnet]
+
+privateSubnet2 = ec2Client.create_subnet({
+	:vpc_id => vpc[:vpc_id],
+	:cidr_block => "10.0.2.0/24",
+	:availability_zone => "us-east-1a"
+})[:subnet]
+
+ec2Client.create_tags({
+		:resources => [
+			privateSubnet[:subnet_id],
+			privateSubnet2[:subnet_id]
+		],
+		:tags => [{:key => "access", :value => "private"}]
 })
 
 # Create a security group allowing inbound ssh from anywhere. This will be used in launching
@@ -82,7 +97,7 @@ ec2Client.authorize_security_group_ingress({
 private_launch_group_id = ec2Client.create_security_group({
 	:group_name => "private-subnet-launch-sg",
 	:description => "private-subnet-launch-sg",
-	:vpc_id => vpc[:vpc_id]	
+	:vpc_id => vpc[:vpc_id]
 })[:group_id]
 
 ec2Client.authorize_security_group_ingress({

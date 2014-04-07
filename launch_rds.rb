@@ -29,12 +29,47 @@ subnet_ids = subnet_infos.map do |subnet|
   subnet[:subnet_id]
 end
 
+# Need the security group subnet
+sg_infos = ec2Client.describe_security_groups({
+    :filters => [
+      {
+          :name => "vpc-id",
+          :values => [vpc_id]
+      }
+    ]
+})[:security_group_info]
+
+private_launch_sg = (sg_infos.select {
+    |sg| sg[:group_name] == "private-subnet-launch-sg"
+  }).first[:group_id]
+
 
 # Create an RDS subnet group containing the two private subnets
 rdsClient = AWS::RDS::Client::new
 
+db_subnet_group_name = "vpc-db-subnet-group"
+
 db_subnet_group = rdsClient.create_db_subnet_group({
-    :db_subnet_group_name => "vpc-db-subnet-group",
+    :db_subnet_group_name => db_subnet_group_name,
     :db_subnet_group_description => "VPC DB Subnet Group",
     :subnet_ids => subnet_ids
 })
+
+
+
+# Create an RDS instance in the VPC
+rdsCreateDB = rdsClient.create_db_instance({
+    :db_name => "ORCL",
+    :db_instance_identifier => "vpc-rds-1",
+    :allocated_storage => 10,
+    :db_instance_class => "db.t1.micro",
+    :engine => "oracle-se",
+    :master_username => "fred",
+    :master_user_password => "fredpasword",
+    :vpc_security_group_ids => [private_launch_sg],
+    :db_subnet_group_name => db_subnet_group_name,
+    :backup_retention_period => 0,
+    :multi_az => false,
+    :license_model => "bring-your-own-license",
+    :publicly_accessible => false
+})[:db_instance_identifier]

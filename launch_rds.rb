@@ -40,18 +40,18 @@ sg_infos = ec2Client.describe_security_groups({
 })[:security_group_info]
 
 private_launch_sg = (sg_infos.select {
-    |sg| sg[:group_name] == "private-subnet-launch-sg"
+    |sg| sg[:group_name] == "sqlnet-sg"
   }).first[:group_id]
 
 
 # Create an RDS subnet group containing the two private subnets
 rdsClient = AWS::RDS::Client::new
 
-db_subnet_group_name = "vpc-db-subnet-group"
+db_subnet_group_name = "vpc-db-subnet-group-2"
 
 db_subnet_group = rdsClient.create_db_subnet_group({
     :db_subnet_group_name => db_subnet_group_name,
-    :db_subnet_group_description => "VPC DB Subnet Group",
+    :db_subnet_group_description => "VPC DB Subnet Group II",
     :subnet_ids => subnet_ids
 })
 
@@ -60,7 +60,7 @@ db_subnet_group = rdsClient.create_db_subnet_group({
 # Create an RDS instance in the VPC
 rdsCreateDB = rdsClient.create_db_instance({
     :db_name => "ORCL",
-    :db_instance_identifier => "vpc-rds-1",
+    :db_instance_identifier => "vpc-rds-2",
     :allocated_storage => 10,
     :db_instance_class => "db.t1.micro",
     :engine => "oracle-se",

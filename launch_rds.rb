@@ -29,7 +29,7 @@ subnet_ids = subnet_infos.map do |subnet|
   subnet[:subnet_id]
 end
 
-# Need the security group subnet
+# Need the security group name
 sg_infos = ec2Client.describe_security_groups({
     :filters => [
       {

@@ -26,17 +26,9 @@ puts "private launch security group id #{private_launch_sg}"
 
 asgClient = AWS::AutoScaling::Client::new
 
-#launch_configs = asgClient.describe_launch_configurations({
-#  :launch_configuration_names =>
-#  [
-#    "b2bnext-launch-config"
-#  ]
-#})[:launch_configurations]
-
-#puts "launch configs #{launch_configs}"
 
 asgClient.create_launch_configuration({
-    :launch_configuration_name => "b2bnextly-launch-config",
+    :launch_configuration_name => "b2bnext-launch-config",
     :image_id => ami_id,
     :key_name => "chef",
     :security_groups => [private_launch_sg],

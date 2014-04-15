@@ -1,8 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/config')
 
-(vpc_id, dummyarg) = ARGV
-unless vpc_id
-  puts "Usage: launch_instances <VPC_ID>"
+(vpc_id, ami_id) = ARGV
+unless vpc_id && ami_id
+  puts "Usage: launch_instances <VPC_ID> <ami_id>"
   exit 1
 end
 
@@ -37,7 +37,7 @@ asgClient = AWS::AutoScaling::Client::new
 
 asgClient.create_launch_configuration({
     :launch_configuration_name => "b2bnextly-launch-config",
-    :image_id => "ami-71667918",
+    :image_id => ami_id,
     :key_name => "chef",
     :security_groups => [private_launch_sg],
     :instance_type => "t1.micro",

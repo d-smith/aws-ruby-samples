@@ -38,22 +38,11 @@ puts "subnet ids: '#{subnet_ids_str}'"
 
 cw = AWS::CloudWatch::Client::new
 
-highCPUAlarm = cw.describe_alarms({
-  :alarm_names => ["Demo High CPU"]
-})[:metric_alarms].first
-
-puts "high cpu alarm is #{highCPUAlarm}"
-
-lowCPUAlarm = cw.describe_alarms({
-    :alarm_names => ["Demo Low CPU alarm"]
-})[:metric_alarms].first
-
-puts "low cpu alarm is #{lowCPUAlarm}"
-
 
 asgClient = AWS::AutoScaling::Client::new
 
-group_name = "b2bnext-auto-scaling-group"
+group_base = "b2bnext"
+group_name = group_base + "-auto-scaling-group"
 
 asgClient.create_auto_scaling_group({
     :auto_scaling_group_name => group_name,
@@ -85,36 +74,28 @@ scale_down_policy_arn = asgClient.put_scaling_policy({
     :cooldown => 600
 })[:policy_arn]
 
-highCPUAlarm.update({
-    :alarm_actions => [scale_up_policy_arn]
+cw.put_metric_alarm({
+    :alarm_name => group_base + " high cpu demo alarm",
+    :actions_enabled => true,
+    :alarm_actions => [scale_up_policy_arn],
+    :metric_name => "CPUUtilization",
+    :namespace => "AWS/EC2",
+    :statistic => "Average",
+    :period=>300,
+    :evaluation_periods=>1,
+    :threshold=>50.0,
+    :comparison_operator=>"GreaterThanOrEqualToThreshold"
 })
 
-highCPUAlarm.delete(:state_updated_timestamp)
-highCPUAlarm.delete(:alarm_arn)
-highCPUAlarm.delete(:alarm_configuration_updated_timestamp)
-highCPUAlarm.delete(:state_value)
-highCPUAlarm.delete(:state_reason)
-
-
-puts "#{highCPUAlarm}"
-
-cw.put_metric_alarm(highCPUAlarm)
-
-
-#
-# Set scale down policy
-#
-lowCPUAlarm.update({
-    :alarm_actions => [scale_down_policy_arn]
+cw.put_metric_alarm({
+    :alarm_name => group_base + " low cpu demo alarm",
+    :actions_enabled => true,
+    :alarm_actions => [scale_down_policy_arn],
+    :metric_name => "CPUUtilization",
+    :namespace => "AWS/EC2",
+    :statistic => "Average",
+    :period=>300,
+    :evaluation_periods=>1,
+    :threshold=>50.0,
+    :comparison_operator=>"LessThanOrEqualToThreshold"
 })
-
-lowCPUAlarm.delete(:state_updated_timestamp)
-lowCPUAlarm.delete(:alarm_arn)
-lowCPUAlarm.delete(:alarm_configuration_updated_timestamp)
-lowCPUAlarm.delete(:state_value)
-lowCPUAlarm.delete(:state_reason)
-
-
-puts "#{lowCPUAlarm}"
-
-cw.put_metric_alarm(lowCPUAlarm)

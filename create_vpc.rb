@@ -173,3 +173,5 @@ ec2Client.authorize_security_group_ingress({
 		}
 	]
 })
+
+puts "finished configuration of #{vpc[:vpc_id]}"

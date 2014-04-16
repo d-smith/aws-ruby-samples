@@ -49,7 +49,7 @@ instances = ec2.instances
 
 # Create instance in the public subnet using the Ubuntu 12.04 AMI
 ec2.instances.create({
-	:image_id => "ami-59a4a230",
+	:image_id => "ami-07273e6e",
 	:key_name => "FidoKeyPair",
 	:security_group_ids => [launch_sg_id],
 	:instance_type => "t1.micro",

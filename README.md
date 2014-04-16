@@ -25,28 +25,43 @@ additional policies I had to create:
 
     {
       "Version": "2012-10-17",
+      "Statement":[{
+      "Effect":"Allow",
+      "Action":[
+          "autoscaling:*LaunchConfiguration*",
+          "autoscaling:*DescribeAutoScalingGroups*",
+          "autoscaling:DescribePolicies",
+          "autoscaling:CreateAutoScalingGroup",
+          "autoscaling:PutScalingPolicy"
+      ],
+      "Resource":"*"
+      }
+      ]
+    }
+
+    {
+      "Version": "2012-10-17",
        "Statement":[{
           "Effect":"Allow",
-          "Action":["elasticloadbalancing:CreateLoadBalancer",
-                    "elasticloadbalancing:ConfigureHealthCheck",
-                    "elasticloadbalancing:DeleteLoadBalancer"],
+          "Action":["cloudwatch:DescribeAlarms",
+                    "cloudwatch:PutMetricAlarm"
+          ],
           "Resource":"*"
           }  
        ]
     }
 
     {
-       "Version": "2012-10-17",
-       "Statement":[{
-          "Effect":"Allow",
-          "Action":[
-              "autoscaling:*LaunchConfiguration*",
-              "autoscaling:*DescribeAutoScalingGroups*"
-          ],
-          "Resource":"*"
-          }
-       ]
-    }
+      "Version": "2012-10-17",
+      "Statement":[{
+        "Effect":"Allow",
+        "Action":["elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:ConfigureHealthCheck",
+                "elasticloadbalancing:DeleteLoadBalancer"],
+                "Resource":"*"
+              }  
+      ]
+    }  
 
 
 

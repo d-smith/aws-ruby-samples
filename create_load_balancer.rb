@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/config')
 
 (vpc_id, load_balancer_name) = ARGV
 unless vpc_id && load_balancer_name
-  puts "Usage: launch_instances <VPC_ID> <load_balancer_name>"
+  puts "Usage: create_load_balancer <VPC_ID> <load_balancer_name>"
   exit 1
 end
 

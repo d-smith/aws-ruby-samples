@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/config')
 
 (vpc_id, dbname) = ARGV
 unless vpc_id && dbname
-  puts "Usage: launch_instances <VPC_ID> <dbname>"
+  puts "Usage: update_db_security_group <VPC_ID> <dbname>"
   exit 1
 end
 

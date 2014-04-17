@@ -4,7 +4,7 @@ require File.expand_path(File.dirname(__FILE__) + '/config')
 
 (vpc_id, private_ip) = ARGV
 unless vpc_id
-	puts "Usage: launch_instances <VPC_ID>"
+	puts "Usage: launch_bastion_and_private <VPC_ID>"
 	exit 1
 end
 

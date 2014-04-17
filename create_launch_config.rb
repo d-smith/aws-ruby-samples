@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/config')
 
 (vpc_id, ami_id) = ARGV
 unless vpc_id && ami_id
-  puts "Usage: launch_instances <VPC_ID> <ami_id>"
+  puts "Usage: create_launch_config <VPC_ID> <ami_id>"
   exit 1
 end
 

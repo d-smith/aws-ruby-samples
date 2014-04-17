@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/config')
 
 (vpc_id, dbname, snapshot_id) = ARGV
 unless vpc_id && dbname && snapshot_id
-  puts "Usage: launch_instances <VPC_ID> <dbname> <snapshot_id>"
+  puts "Usage: launch_rds_from_snapshot <VPC_ID> <dbname> <snapshot_id>"
   exit 1
 end
 
@@ -62,24 +62,7 @@ rdsCreateDB = rdsClient.restore_db_instance_from_db_snapshot({
     :db_snapshot_identifier => snapshot_id,
     :db_instance_identifier => dbname,
     :db_instance_class => "db.t1.micro",
-#    :allocated_storage => 10,
-#    :engine => "oracle-se",
-#    :master_username => "fred",
-#    :master_user_password => "fredpasword",
-#    :vpc_security_group_ids => [private_launch_sg],
     :db_subnet_group_name => db_subnet_group_name,
-#    :backup_retention_period => 0,
     :multi_az => false,
-#    :license_model => "bring-your-own-license",
     :publicly_accessible => false
 })[:db_instance_identifier]
-
-# Set the appropriate security group - note the API doesn't let us do this
-# out of the box.
-
-updated_sgs = rdsClient.modify_db_instance({
-    :db_instance_identifier => dbname,
-    :vpc_security_group_ids => [private_launch_sg]
-})[:vpc_security_groups]
-
-puts update_sgs

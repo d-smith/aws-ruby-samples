@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/config')
 
 (vpc_id, dummyarg) = ARGV
 unless vpc_id
-  puts "Usage: launch_instances <VPC_ID>"
+  puts "Usage: create_auto_scaling_group <VPC_ID>"
   exit 1
 end
 

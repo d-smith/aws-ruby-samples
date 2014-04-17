@@ -14,7 +14,16 @@ IP address (e.g. 10.0.1.99) using the private-subnet-launch-sg security
 group.
 
 The launch_rds.rb script creates an RDS security group and launches an
-RDS instance in the VPC.
+RDS instance in the VPC. This is useful for creating an initial RDS instance.
+The launch_bastion_and_private.rb script launches a bastion host and
+instance in a private subnet. After fixing the hosts file (see below) SQL*Net
+can be used from the private host for building the schema. Once the schema
+has been created, a snapshot can be created, after which new instances with the
+snapshot-ed schema can be created using the launch_rds_from_snapshot.rb. Note
+that when launching from a snapshot, there's no way to override the default
+security group with the VPC security. Once the instance is active,
+the update_db_security_group.rc script can be run to restrict access to the RDS
+instance to the private subnets in the VPC.
 
 Permissions
 ----------------

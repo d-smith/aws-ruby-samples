@@ -112,3 +112,39 @@ When I tried this initially, I received the following error:
 The solution was to edit /etc/hosts to include the hostname in the localhost line:
 
     127.0.0.1   localhost ip-10-0-0-93
+
+
+Ruby Setup - Vagrant VM
+--------------------------
+
+Working behind an HTTP proxy? Export http_proxy and https_proxy variables in
+.bashrc and source it.
+
+You will need to have those variables propogate to the sudo context as well. To
+do so, edit /etc/sudoers and add two defaults.
+
+  Defaults  env_keep += "http_proxy"
+  Defaults  env_keep += "https_proxy"
+
+Now grab curl, and install RVM
+
+  sudo apt-get install curl
+  curl -sSL https://get.rvm.io | bash -s stable --ruby
+
+Follow the post install instructions, e.g.
+
+  source /home/vagrant/.rvm/scripts/rvm
+
+Install and configure git
+
+  sudo apt-get install git
+  git config --global http.proxy <proxy-url>
+  git config --global https.proxy <proxy-url>
+  git config --global user.name <user name>
+  git config --global user.email <email>
+
+
+
+Now install the AWS gem
+
+  gem install --http-proxy <proxy-url-and-port> aws-sdk

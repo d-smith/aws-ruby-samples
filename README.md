@@ -1,5 +1,7 @@
 Overview
 -----------------
+Note - I am in the middle of updating the sample - the description in the overview currently describes the scripts in the orig directory.
+
 
 The create_vpn.rb script creates a VPC with three subnets, one in which
 servers can be accessed via ssh from anywhere, and two private subnets. We

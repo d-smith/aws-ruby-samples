@@ -1,31 +1,14 @@
 Overview
 -----------------
-Note - I am in the middle of updating the sample - the description in the overview currently describes the scripts in the orig directory.
 
+The create_vpn.rb script creates a VPC with four subnets - two public and two
+private. For this sample we need two AZs for our VPC-specific RDS instance.
 
-The create_vpn.rb script creates a VPC with three subnets, one in which
-servers can be accessed via ssh from anywhere, and two private subnets. We
-need two private subnets for launching an RDS instance in the VPC.
+Note for elastic load balancing, load balancers are placed in public subnets,
+with security group ingress configuration for the private subnets gating
+access. So for this sample we create two public subnets (one in each AZ) to
+allow ELB to route traffic to private servers in the AZs.
 
-After running this script, launch public instances in the VPC specifying the
-public subnet in us-east-1d, with a public IP address, and use the
-launch-sg created by the script.
-
-Private instances are launched in the us-east-1c or us-east-1a subnets, with a private
-IP address (e.g. 10.0.1.99) using the private-subnet-launch-sg security
-group.
-
-The launch_rds.rb script creates an RDS security group and launches an
-RDS instance in the VPC. This is useful for creating an initial RDS instance.
-The launch_bastion_and_private.rb script launches a bastion host and
-instance in a private subnet. After fixing the hosts file (see below) SQL*Net
-can be used from the private host for building the schema. Once the schema
-has been created, a snapshot can be created, after which new instances with the
-snapshot-ed schema can be created using the launch_rds_from_snapshot.rb. Note
-that when launching from a snapshot, there's no way to override the default
-security group with the VPC security. Once the instance is active,
-the update_db_security_group.rc script can be run to restrict access to the RDS
-instance to the private subnets in the VPC.
 
 Permissions
 ----------------

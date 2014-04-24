@@ -39,7 +39,7 @@ puts "subnet ids: '#{subnet_ids_str}'"
 cw = AWS::CloudWatch::Client::new
 
 
-asgClient = AWS::AutoScaling::Client::new
+asgClient = AWS::AutoScaling::Client::V20110101::new
 
 group_base = "b2bnext"
 group_name = group_base + "-auto-scaling-group"
@@ -81,6 +81,7 @@ cw.put_metric_alarm({
     :metric_name => "CPUUtilization",
     :namespace => "AWS/EC2",
     :statistic => "Average",
+    :dimensions => [{:name => "AutoScalingGroupName",:value => group_name}],
     :period=>300,
     :evaluation_periods=>1,
     :threshold=>50.0,
@@ -94,6 +95,7 @@ cw.put_metric_alarm({
     :metric_name => "CPUUtilization",
     :namespace => "AWS/EC2",
     :statistic => "Average",
+    :dimensions => [{:name => "AutoScalingGroupName",:value => group_name}],
     :period=>300,
     :evaluation_periods=>1,
     :threshold=>50.0,

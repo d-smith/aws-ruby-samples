@@ -4,6 +4,8 @@ Overview
 The create_vpn.rb script creates a VPC with four subnets - two public and two
 private. For this sample we need two AZs for our VPC-specific RDS instance.
 
+![VPC topology](vpc.png "VPC Topology")
+
 Note for elastic load balancing, load balancers are placed in public subnets,
 with security group ingress configuration for the private subnets gating
 access. So for this sample we create two public subnets (one in each AZ) to

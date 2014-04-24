@@ -98,6 +98,6 @@ cw.put_metric_alarm({
     :dimensions => [{:name => "AutoScalingGroupName",:value => group_name}],
     :period=>300,
     :evaluation_periods=>1,
-    :threshold=>50.0,
+    :threshold=>30.0,
     :comparison_operator=>"LessThanOrEqualToThreshold"
 })

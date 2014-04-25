@@ -14,7 +14,9 @@ allow ELB to route traffic to private servers in the AZs.
 To create the set up above, follow these steps.
 
 1. In the directory above the one containing these scripts, create a
-   config.yml file to contain your access key id and secret access key
+   config.yml file to contain the IAM access key id and secret access key
+   you intend to use when running the scripts. Note you will need the
+   appropriate access policies associated with your IAM user as described below.
 
         vagrant@precise64:/vagrant/dev/aws-ruby-samples$ cat ../config.yml
         access_key_id: akeyid
@@ -31,7 +33,7 @@ To create the set up above, follow these steps.
         ruby launch_rds_from_snapshot.rb vpc-8b27e6ee b2bnext-db b2bnext-with-idx
 
     Note this creates the instance with the default RDS security group,
-    which is likely not accessibly from anywhere. Once the database
+    which is likely not accessible from anywhere. Once the database
     is available, you can update its security group to allow ingress
     from the private subnets.
 
@@ -185,7 +187,7 @@ client - grab it from the OTN [here](http://www.oracle.com/technetwork/topics/li
 
 You will need the basic and sqlplus RPMs.
 
-The RPMs are installed via
+The RPMs are installed on the Amazon AMI via
 
     rpm -i oracle-instantclient12.1-basic-12.1.0.1.0-1.x86_64.rpm
     rpm -i oracle-instantclient12.1-sqlplus-12.1.0.1.0-1.x86_64.rpm

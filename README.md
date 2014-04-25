@@ -11,6 +11,52 @@ with security group ingress configuration for the private subnets gating
 access. So for this sample we create two public subnets (one in each AZ) to
 allow ELB to route traffic to private servers in the AZs.
 
+To create the set up above, follow these steps.
+
+1. In the directory above the one containing these scripts, create a
+   config.yml file to contain your access key id and secret access key
+
+        vagrant@precise64:/vagrant/dev/aws-ruby-samples$ cat ../config.yml
+        access_key_id: akeyid
+        secret_access_key: asecretaccesskey
+
+2. Create the VPC by running create_vpc.rb
+
+        ruby create_vpc.rb
+
+3. Create an RDS instance within a subnet group containing the private
+   subnets. The easiest way to do this is to use an existing snapshot
+   to do so, e.g.
+
+        ruby launch_rds_from_snapshot.rb vpc-8b27e6ee b2bnext-db b2bnext-with-idx
+
+    Note this creates the instance with the default RDS security group,
+    which is likely not accessibly from anywhere. Once the database
+    is available, you can update its security group to allow ingress
+    from the private subnets.
+
+        ruby update_db_security_group.rb vpc-8b27e6ee b2bnext-db
+
+   If you want to create an RDS instance from scratch, look at the
+   orig/launch_rds.rb script
+
+4. Once the database is available, presuming you need the endpoint
+   address, you can launch an EC2 instance, install and configure
+   your application on it, and create an image to use with an auto
+   scaling group.
+
+   When the image is available, you can create the launch configuration
+   that references the image.
+
+        ruby create_launch_config.rb vpc-8b27e6ee ami-4409ec2c
+
+5. Once the image is available, the load balancer and auto scaling
+   group can be created.
+
+        ruby create_load_balancer.rb vpc-8b27e6ee b2bnext-lb
+        ruby create_auto_scaling_group.rb vpc-8b27e6ee b2bnext-lb
+
+
 
 Permissions
 ----------------
@@ -58,6 +104,75 @@ additional policies I had to create:
               }  
       ]
     }  
+
+
+These were added to a group baselined with the following policy:
+
+    {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "Stmt1335291234152",
+        "Action": [
+          "cs:*"
+        ],
+        "Effect": "Allow",
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "Stmt1385132429000",
+        "Effect": "Allow",
+        "Action": [
+          "ec2:*"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "Stmt1385132449000",
+        "Effect": "Allow",
+        "Action": [
+          "rds:*"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "Stmt1385132492000",
+        "Effect": "Allow",
+        "Action": [
+          "s3:*"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "Stmt1385132502000",
+        "Effect": "Allow",
+        "Action": [
+          "sqs:*"
+        ],
+        "Resource": [
+          "*"
+        ]
+      },
+      {
+        "Sid": "Stmt1385132542000",
+        "Effect": "Allow",
+        "Action": [
+          "dynamodb:*"
+        ],
+        "Resource": [
+          "*"
+        ]
+      }
+    ]
+    }
 
 
 
@@ -129,7 +244,7 @@ Install and configure git
     git config --global https.proxy <proxy-url>
     git config --global user.name <user name>
     git config --global user.email <email>
-  
+
 
 
 Now install the AWS gem

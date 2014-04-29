@@ -75,107 +75,109 @@ create_private_subnets(ec2Client, "10.0.3.0/24", "us-east-1c", vpc)
 
 # Create a security group allowing inbound ssh from anywhere. This will be used in launching
 # EC2 instances in the public subnet
-launch_group_id = ec2Client.create_security_group({
-  :group_name => "launch-sg",
-  :description => "launch-sg",
-  :vpc_id => vpc[:vpc_id]
-})[:group_id]
 
-puts("created security group #{launch_group_id}")
 
-ec2Client.authorize_security_group_ingress({
-  :group_id => launch_group_id,
-  :ip_permissions => [
-    {:ip_protocol => "tcp",
-     :from_port => 22,
-     :to_port => 22,
-     :ip_ranges => [
-       {:cidr_ip => "0.0.0.0/0"}
-     ]
-    }
-  ]
-})
+#launch_group_id = ec2Client.create_security_group({
+#  :group_name => "launch-sg",
+#  :description => "launch-sg",
+#  :vpc_id => vpc[:vpc_id]
+#})[:group_id]
+
+#puts("created security group #{launch_group_id}")
+
+#ec2Client.authorize_security_group_ingress({
+#  :group_id => launch_group_id,
+#  :ip_permissions => [
+#    {:ip_protocol => "tcp",
+#     :from_port => 22,
+#     :to_port => 22,
+#     :ip_ranges => [
+#       {:cidr_ip => "0.0.0.0/0"}
+#     ]
+#    }
+#  ]
+#})
 
 
 # Create a security group allowing access from the VPC. This will be used when launching private instances.
-private_launch_group_id = ec2Client.create_security_group({
-  :group_name => "private-subnet-launch-sg",
-  :description => "private-subnet-launch-sg",
-  :vpc_id => vpc[:vpc_id]
-})[:group_id]
+#private_launch_group_id = ec2Client.create_security_group({
+#  :group_name => "private-subnet-launch-sg",
+#  :description => "private-subnet-launch-sg",
+#  :vpc_id => vpc[:vpc_id]
+#})[:group_id]
 
-puts("created private subnet launch sg #{private_launch_group_id}")
+#puts("created private subnet launch sg #{private_launch_group_id}")
 
-ec2Client.authorize_security_group_ingress({
-  :group_id => private_launch_group_id,
-  :ip_permissions => [
-    {:ip_protocol => "tcp",
-     :from_port => 22,
-     :to_port => 22,
-     :ip_ranges => [
-       {:cidr_ip => "10.0.0.0/16"}
-     ]
-     },
-     {
-        :ip_protocol => "tcp",
-        :from_port => 9000,
-        :to_port => 9000,
-        :ip_ranges => [
-          {:cidr_ip => "10.0.0.0/16"}
-        ]
-      }
-    ]
-})
+#ec2Client.authorize_security_group_ingress({
+#  :group_id => private_launch_group_id,
+#  :ip_permissions => [
+#    {:ip_protocol => "tcp",
+#     :from_port => 22,
+#     :to_port => 22,
+#     :ip_ranges => [
+#       {:cidr_ip => "10.0.0.0/16"}
+#     ]
+#     },
+#     {
+#        :ip_protocol => "tcp",
+#        :from_port => 9000,
+#        :to_port => 9000,
+#        :ip_ranges => [
+#          {:cidr_ip => "10.0.0.0/16"}
+#        ]
+#      }
+#    ]
+#})
 
 # Create a security group to allow SQL*Net traffic on port 1521
 # from the private launch sg
-sqlnet_sg_id = ec2Client.create_security_group({
-  :group_name => "sqlnet-sg",
-  :description => "SQLNet access from VPC private subnets",
-  :vpc_id => vpc[:vpc_id]
-})[:group_id]
+#sqlnet_sg_id = ec2Client.create_security_group({
+#  :group_name => "sqlnet-sg",
+#  :description => "SQLNet access from VPC private subnets",
+#  :vpc_id => vpc[:vpc_id]
+#})[:group_id]
 
-puts("created sqlnet sg #{sqlnet_sg_id}")
+#puts("created sqlnet sg #{sqlnet_sg_id}")
 
-ec2Client.authorize_security_group_ingress({
-  :group_id => sqlnet_sg_id,
-  :ip_permissions => [
-    {:ip_protocol => "tcp",
-    :from_port => 1521,
-    :to_port => 1521,
-    :ip_ranges => [
-      {:cidr_ip => "10.0.1.0/24"}
-    ]
-  },
-  {:ip_protocol => "tcp",
-  :from_port => 1521,
-  :to_port => 1521,
-  :ip_ranges => [
-    {:cidr_ip => "10.0.3.0/24"}
-  ]
-  }
-  ]
-})
+#ec2Client.authorize_security_group_ingress({
+#  :group_id => sqlnet_sg_id,
+#  :ip_permissions => [
+#    {:ip_protocol => "tcp",
+#    :from_port => 1521,
+#    :to_port => 1521,
+#    :ip_ranges => [
+#      {:cidr_ip => "10.0.1.0/24"}
+#    ]
+#  },
+#  {:ip_protocol => "tcp",
+#  :from_port => 1521,
+#  :to_port => 1521,
+#  :ip_ranges => [
+#    {:cidr_ip => "10.0.3.0/24"}
+#  ]
+#  }
+#  ]
+#})
 
-load_balancer_sg = ec2Client.create_security_group({
-  :group_name => "load_balancer_sg",
-  :description => "Load balancer security group",
-  :vpc_id => vpc[:vpc_id]
-})[:group_id]
+#load_balancer_sg = ec2Client.create_security_group({
+#  :group_name => "load_balancer_sg",
+#  :description => "Load balancer security group",
+#  :vpc_id => vpc[:vpc_id]
+#})[:group_id]
 
-puts("created load balancer security group #{load_balancer_sg}")
+#puts("created load balancer security group #{load_balancer_sg}")
 
-ec2Client.authorize_security_group_ingress({
-  :group_id => load_balancer_sg,
-  :ip_permissions => [
-    {:ip_protocol => "tcp",
-    :from_port => 80,
-    :to_port => 80,
-    :ip_ranges => [
-      {:cidr_ip => "0.0.0.0/0"}
-    ]
-    }
-  ]
-})
+#ec2Client.authorize_security_group_ingress({
+#  :group_id => load_balancer_sg,
+#  :ip_permissions => [
+#    {:ip_protocol => "tcp",
+#    :from_port => 80,
+#    :to_port => 80,
+#    :ip_ranges => [
+#      {:cidr_ip => "0.0.0.0/0"}
+#    ]
+#    }
+#  ]
+#})
 
 puts "finished configuration of #{vpc[:vpc_id]}"

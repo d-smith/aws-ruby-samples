@@ -26,7 +26,11 @@ To create the set up above, follow these steps.
 
         ruby create_vpc.rb
 
-3. Create an RDS instance within a subnet group containing the private
+3. Create the security groups by running create_security_groups
+
+        ruby create_security_groups.rb
+
+4. Create an RDS instance within a subnet group containing the private
    subnets. The easiest way to do this is to use an existing snapshot
    to do so, e.g.
 
@@ -42,7 +46,7 @@ To create the set up above, follow these steps.
    If you want to create an RDS instance from scratch, look at the
    orig/launch_rds.rb script
 
-4. Once the database is available, presuming you need the endpoint
+5. Once the database is available, presuming you need the endpoint
    address, you can launch an EC2 instance, install and configure
    your application on it, and create an image to use with an auto
    scaling group.
@@ -52,7 +56,7 @@ To create the set up above, follow these steps.
 
         ruby create_launch_config.rb vpc-8b27e6ee ami-4409ec2c
 
-5. Once the image is available, the load balancer and auto scaling
+6. Once the image is available, the load balancer and auto scaling
    group can be created.
 
         ruby create_load_balancer.rb vpc-8b27e6ee b2bnext-lb

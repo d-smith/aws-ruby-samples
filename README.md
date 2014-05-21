@@ -111,6 +111,22 @@ additional policies I had to create:
       ]
     }  
 
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "Stmt1400688864000",
+          "Effect": "Allow",
+          "Action": [
+            "iam:PassRole"
+          ],
+          "Resource": [
+            "*"
+          ]
+        }
+      ]
+    }
+
 
 These were added to a group baselined with the following policy:
 
@@ -181,6 +197,25 @@ These were added to a group baselined with the following policy:
     }
 
 
+For the instances spun up via the launch group, loading a war from an S3 bucket
+requires defining an IAM role to launch the instance under, and a policy
+associated with the role that allows reading files from the bucket. The
+script assumes a role named war-deployer-role (referenced by the role ARN) and
+the following policy:
+
+
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:Get*",
+            "s3:List*"
+            ],
+        "Resource": [ "arn:aws:s3:::xt-war-buckets/*"]
+        }]
+    }  
 
 
 Oracle Connection Details

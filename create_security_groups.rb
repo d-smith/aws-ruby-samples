@@ -65,3 +65,15 @@ load_balancer_sg = security_groups.create("load_balancer_sg", {
 wait_for_group_creation(load_balancer_sg)
 
 load_balancer_sg.authorize_ingress(:tcp, 80, "0.0.0.0/0")
+
+# Create a security group for the NAT
+nat_sg = security_groups.create("nat_sg", {
+  :description => "NAT instance security group",
+  :vpc => vpc
+})
+
+wait_for_group_creation(nat_sg)
+
+nat_sg.authorize_ingress(:tcp, 80, private_launch_sg)
+nat_sg.authorize_ingress(:tcp, 443, private_launch_sg)
+nat_sg.authorize_ingress(:tcp, 22, launch_sg)

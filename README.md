@@ -11,6 +11,14 @@ with security group ingress configuration for the private subnets gating
 access. So for this sample we create two public subnets (one in each AZ) to
 allow ELB to route traffic to private servers in the AZs.
 
+Note to allow us to pull wars for deployment to our app servers in the private
+subnets, we need a NAT host in the public subnet, a security group that allows
+ingress on ports 80 and 443 from the private subnet launch security group,
+and a route in the main route table to allow traffic headed outside the VPC
+to be forwarded to the NAT instance. Note the NAT is not highly available
+(nor is the database) - there are ways to make both of these highly
+available; it's not done here to keep things simple and cheap.
+
 To create the set up above, follow these steps.
 
 1. In the directory above the one containing these scripts, create a
@@ -28,7 +36,12 @@ To create the set up above, follow these steps.
 
 3. Create the security groups by running create_security_groups
 
-        ruby create_security_groups.rb
+        ruby create_security_groups.rb vpc-xxxxxxx
+
+4. Launch a NAT host in a public subnet, and set up the routes to allow HTTP(S)
+access to the outside from the private subnet.
+
+        ruby launch-nat-instance.rb vpc-xxxxxx
 
 4. Create an RDS instance within a subnet group containing the private
    subnets. The easiest way to do this is to use an existing snapshot

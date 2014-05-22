@@ -31,7 +31,7 @@ launch_sg = security_groups.create("launch-sg", {
 
 wait_for_group_creation(launch_sg)
 
-launch_sg.authorize_ingress(:tcp, 22, "0.0.0.0/0")
+launch_sg.authorize_ingress(:tcp, 22, "192.223.128.0/17") 
 
 # Create the security group for the load balancer
 load_balancer_sg = security_groups.create("load_balancer_sg", {

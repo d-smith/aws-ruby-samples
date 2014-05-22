@@ -22,24 +22,6 @@ end
 ec2Client = AWS::EC2::Client::new
 
 
-# Grab the private subnets. Note this assumes we know the subnets we
-# are looking for via knowledge of how the VPC was created.
-subnet_infos = ec2Client.describe_subnets({
-  :filters => [
-    {
-      :name => "vpc-id",
-      :values => [vpc_id]
-    },
-    {
-      :name => "cidr",
-      :values => ["10.0.1.0/24", "10.0.2.0/24"]
-    }
-  ]
-})[:subnet_set]
-
-subnet_ids = subnet_infos.map do |subnet|
-  subnet[:subnet_id]
-end
 
 # Need the security group name
 sg_infos = ec2Client.describe_security_groups({
@@ -54,9 +36,6 @@ sg_infos = ec2Client.describe_security_groups({
 private_launch_sg = (sg_infos.select {
     |sg| sg[:group_name] == "sqlnet-sg"
   }).first[:group_id]
-
-
-
 
 
 

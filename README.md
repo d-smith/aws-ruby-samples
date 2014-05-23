@@ -47,14 +47,14 @@ access to the outside from the private subnet.
    subnets. The easiest way to do this is to use an existing snapshot
    to do so, e.g.
 
-        ruby launch_rds_from_snapshot.rb vpc-8b27e6ee b2bnext-db b2bnext-with-idx
+        ruby launch_rds_from_snapshot.rb vpc-xxxxxxxx b2bnext-db b2bnext-with-idx
 
     Note this creates the instance with the default RDS security group,
     which is likely not accessible from anywhere. Once the database
     is available, you can update its security group to allow ingress
     from the private subnets.
 
-        ruby update_db_security_group.rb vpc-8b27e6ee b2bnext-db
+        ruby update_db_security_group.rb vpc-xxxxxxxx b2bnext-db
 
    If you want to create an RDS instance from scratch, look at the
    orig/launch_rds.rb script
@@ -67,13 +67,13 @@ access to the outside from the private subnet.
    When the image is available, you can create the launch configuration
    that references the image.
 
-        ruby create_launch_config.rb vpc-8b27e6ee ami-4409ec2c
+        ruby create_launch_config.rb vpc-xxxxxxxx
 
 6. Once the image is available, the load balancer and auto scaling
    group can be created.
 
-        ruby create_load_balancer.rb vpc-8b27e6ee b2bnext-lb
-        ruby create_auto_scaling_group.rb vpc-8b27e6ee b2bnext-lb
+        ruby create_load_balancer.rb vpc-xxxxxxxx b2bnext-lb
+        ruby create_auto_scaling_group.rb vpc-xxxxxxxx b2bnext-lb
 
 
 

@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/config')
 
-def create_public_facing_subnets(ec2Client, cidr, az, vpc, igw, routeTable)
+def create_public_facing_subnets(ec2Client, cidr, az, vpc, routeTable)
   # Create the subnet
   subnet = ec2Client.create_subnet({
     :vpc_id => vpc[:vpc_id],
@@ -64,8 +64,8 @@ ec2Client.create_route({
 })
 
 # Create two public subnets
-create_public_facing_subnets(ec2Client, "10.0.0.0/24", "us-east-1a", vpc, igw, routeTable)
-create_public_facing_subnets(ec2Client, "10.0.2.0/24", "us-east-1c", vpc, igw, routeTable)
+create_public_facing_subnets(ec2Client, "10.0.0.0/24", "us-east-1a", vpc,  routeTable)
+create_public_facing_subnets(ec2Client, "10.0.2.0/24", "us-east-1c", vpc,  routeTable)
 
 # Create two private subnets (RDS needs two availability zones), and tag them
 # as private

@@ -1,5 +1,21 @@
 require File.expand_path(File.dirname(__FILE__) + '/config')
 
+def wait_for_available_db(rdsClient, dbName)
+  dbAvailable = false
+  while !dbAvailable do
+    sleep(15)
+    puts "Check db status at #{Time.now}"
+
+    dbStatus = rdsClient.describe_db_instances({
+        :db_instance_identifier => dbName
+    })[:db_instances].first[:db_instance_status]
+
+    if(dbStatus == "available")
+      dbAvailable = true
+    end
+  end
+end
+
 
 (vpc_id, dbname, snapshot_id) = ARGV
 unless vpc_id && dbname && snapshot_id
@@ -66,3 +82,14 @@ rdsCreateDB = rdsClient.restore_db_instance_from_db_snapshot({
     :multi_az => false,
     :publicly_accessible => false
 })[:db_instance_identifier]
+
+# Wait for the db state to be available
+wait_for_available_db(rdsClient, dbname)
+
+# Update the security group
+updated_sgs = rdsClient.modify_db_instance({
+    :db_instance_identifier => dbname,
+    :vpc_security_group_ids => [private_launch_sg]
+})[:vpc_security_groups]
+
+puts updated_sgs

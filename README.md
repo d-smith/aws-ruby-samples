@@ -49,13 +49,6 @@ access to the outside from the private subnet.
 
         ruby launch_rds_from_snapshot.rb vpc-xxxxxxxx b2bnext-db b2bnext-with-idx
 
-    Note this creates the instance with the default RDS security group,
-    which is likely not accessible from anywhere. Once the database
-    is available, you can update its security group to allow ingress
-    from the private subnets.
-
-        ruby update_db_security_group.rb vpc-xxxxxxxx b2bnext-db
-
    If you want to create an RDS instance from scratch, look at the
    orig/launch_rds.rb script
 
@@ -68,6 +61,12 @@ access to the outside from the private subnet.
    that references the image.
 
         ruby create_launch_config.rb vpc-xxxxxxxx
+
+    Note that the current scripts and PoC assume the use of a baseline
+    AMI that includes Java and Tomcat, with the user data in the launch
+    of the AMI copying the WAR into the webapps directory from an S3
+    bucket. The AMI is lauched with an IAM role that has read access to
+    the bucket.
 
 6. Once the image is available, the load balancer and auto scaling
    group can be created.

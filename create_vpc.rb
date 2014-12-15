@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/config')
+require File.expand_path(File.dirname(__FILE__) + '/get_vpc_status')
 
 def create_public_facing_subnets(ec2Client, cidr, az, vpc, routeTable)
   # Create the subnet
@@ -42,6 +43,11 @@ ec2Client = AWS::EC2::Client::new
 #Create a VPC
 vpc = ec2Client.create_vpc({ :cidr_block => "10.0.0.0/16"})[:vpc]
 puts "created vpc #{vpc[:vpc_id]}"
+
+wait_until_vpc_available(ec2, vpc[:vpc_id])
+
+puts "vpc is available"
+exit
 
 # Create and attach an internet gateway
 igw = ec2Client.create_internet_gateway()[:internet_gateway]

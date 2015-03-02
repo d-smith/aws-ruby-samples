@@ -37,14 +37,14 @@ def create_private_subnets(ec2Client, cidr, az, vpc)
     })
 end
 
-ec2 = AWS::EC2::new
-ec2Client = AWS::EC2::Client::new
+ec2Client = Aws::EC2::Client.new
 
 #Create a VPC
+puts "create VPC..."
 vpc = ec2Client.create_vpc({ :cidr_block => "10.0.0.0/16"})[:vpc]
 puts "created vpc #{vpc[:vpc_id]}"
 
-wait_until_vpc_available(ec2, vpc[:vpc_id])
+wait_until_vpc_available(ec2Client, vpc[:vpc_id])
 
 puts "vpc is available"
 exit

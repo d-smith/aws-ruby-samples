@@ -47,7 +47,6 @@ puts "created vpc #{vpc[:vpc_id]}"
 wait_until_vpc_available(ec2Client, vpc[:vpc_id])
 
 puts "vpc is available"
-exit
 
 # Create and attach an internet gateway
 igw = ec2Client.create_internet_gateway()[:internet_gateway]

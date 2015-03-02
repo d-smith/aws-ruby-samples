@@ -1,12 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/config')
+require File.expand_path(File.dirname(__FILE__) + '/get_vpc_status')
 
-def wait_for_group_creation(sg)
-  created = false
-  while !created do
-    sleep(2)
-    created = sg.exists?
-  end
-end
+#def wait_for_group_creation(sg)
+#  created = false
+#  while !created do
+#    sleep(2)
+#    created = sg.exists?
+#  end
+#end
 
 
 
@@ -16,22 +17,39 @@ unless vpc_id
   exit 1
 end
 
-ec2 = AWS::EC2::new
+ec2 = Aws::EC2::Client.new
 
 
-vpc = ec2.vpcs.filter('vpc-id', vpc_id).first
+vpc = get_vpc(ec2, vpc_id)
 
-security_groups = vpc.security_groups()
+#Create the launch_sg
+launch_sg = ec2.create_security_group(
+  group_name: "launch-sg",
+  description: "launch-sg",
+  vpc_id: vpc_id
+)[:group_id]
 
-# Create the security group used to launch instances in the public subnets
-launch_sg = security_groups.create("launch-sg", {
-    :description => "launch-sg",
-    :vpc => vpc
-})
+puts "create sg #{launch_sg}"
 
-wait_for_group_creation(launch_sg)
+#Authorize ingress for ssh from our network
+ec2.authorize_security_group_ingress(
+  group_id: launch_sg,
+  ip_permissions: [
+    {
+      ip_protocol: "tcp",
+      to_port: 22,
+      from_port: 22,
+      ip_ranges:[
+        {
+          cidr_ip: "192.223.128.0/17",
+        }
+      ]
+    },
+  ]
+)
 
-launch_sg.authorize_ingress(:tcp, 22, "192.223.128.0/17") 
+exit
+#TODO - resume port
 
 # Create the security group for the load balancer
 load_balancer_sg = security_groups.create("load_balancer_sg", {

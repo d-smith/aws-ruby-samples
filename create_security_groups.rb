@@ -1,15 +1,31 @@
 require File.expand_path(File.dirname(__FILE__) + '/config')
 require File.expand_path(File.dirname(__FILE__) + '/get_vpc_status')
 
-#def wait_for_group_creation(sg)
-#  created = false
-#  while !created do
-#    sleep(2)
-#    created = sg.exists?
-#  end
-#end
+def create_security_group(ec2, group_name, vpc_id)
+  ec2.create_security_group(
+    group_name: group_name,
+    description: group_name,
+    vpc_id: vpc_id
+  )[:group_id]
+end
 
-
+def authorize_ingress(ec2, sg_id, port, cidr_ip)
+  ec2.authorize_security_group_ingress(
+    group_id: sg_id,
+    ip_permissions: [
+      {
+        ip_protocol: "tcp",
+        to_port: port,
+        from_port: port,
+        ip_ranges:[
+          {
+            cidr_ip: cidr_ip,
+          }
+        ]
+      },
+    ]
+  )
+end
 
 (vpc_id, dummyarg) = ARGV
 unless vpc_id
@@ -22,31 +38,10 @@ ec2 = Aws::EC2::Client.new
 
 vpc = get_vpc(ec2, vpc_id)
 
-#Create the launch_sg
-launch_sg = ec2.create_security_group(
-  group_name: "launch-sg",
-  description: "launch-sg",
-  vpc_id: vpc_id
-)[:group_id]
 
-puts "create sg #{launch_sg}"
-
-#Authorize ingress for ssh from our network
-ec2.authorize_security_group_ingress(
-  group_id: launch_sg,
-  ip_permissions: [
-    {
-      ip_protocol: "tcp",
-      to_port: 22,
-      from_port: 22,
-      ip_ranges:[
-        {
-          cidr_ip: "192.223.128.0/17",
-        }
-      ]
-    },
-  ]
-)
+launch_sg = create_security_group(ec2, "launch-sg", vpc_id)
+puts "created sg #{launch_sg}"
+authorize_ingress(ec2, launch_sg, 22, "192.223.128.0/17")
 
 exit
 #TODO - resume port

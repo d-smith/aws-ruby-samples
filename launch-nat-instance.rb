@@ -16,7 +16,7 @@ def get_subnet_id(ec2Client, vpc, cidr)
         :values => [vpc]
       }
     ]
-  })[:subnet_set]
+  })[:subnets]
 
 
   (subnet_infos.select { |s| s[:cidr_block] == cidr}).first[:subnet_id]
@@ -31,11 +31,12 @@ def wait_for_instance_running(instance)
   end
 end
 
-ec2Client = AWS::EC2::Client::new
+ec2Client = Aws::EC2::Client.new
 
 # Get a public subnet id to launch the instance in
 public_subnet_id = get_subnet_id(ec2Client, vpc_id, "10.0.2.0/24")
-
+puts public_subnet_id
+exit
 
 #
 # Get the security groups for launching public and private instances

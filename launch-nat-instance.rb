@@ -55,19 +55,37 @@ launch_sg_id = (sg_infos.select { |sg| sg[:group_name] == "sg_nat"}).first[:grou
 
 
 
-ec2 = AWS::EC2::new
 
 # Create instance in the public subnet using amzn-ami-vpc-nat-pv-2013.09.0.x86_64-ebs AMI
-nat_instance = ec2.instances.create({
-  :image_id => "ami-ad227cc4",
-  :key_name => "FidoKeyPair",
-  :security_group_ids => [launch_sg_id],
-  :instance_type => "t1.micro",
-  :subnet => public_subnet_id,
-  :associate_public_ip_address => true
+#nat_instance = ec2.instances.create({
+#  :image_id => "ami-ad227cc4",
+#  :key_name => "FidoKeyPair",
+#  :security_group_ids => [launch_sg_id],
+#  :instance_type => "t1.micro",
+#  :subnet => public_subnet_id,
+#  :associate_public_ip_address => true
+#})
+
+nat_instance = ec2Client.run_instances({
+    image_id: "ami-ad227cc4",
+    min_count: 1,
+    max_count: 1,
+    key_name: "FidoKeyPair",
+
+    instance_type: "t1.micro",
+
+    network_interfaces: [
+      {
+        device_index: 0,
+        subnet_id: public_subnet_id,
+        associate_public_ip_address: true,
+        groups: [launch_sg_id],
+      }
+    ]
 })
 
 puts "launched NAT instance #{nat_instance}"
+exit
 
 wait_for_instance_running(nat_instance)
 

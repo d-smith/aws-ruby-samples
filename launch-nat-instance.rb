@@ -36,7 +36,6 @@ ec2Client = Aws::EC2::Client.new
 # Get a public subnet id to launch the instance in
 public_subnet_id = get_subnet_id(ec2Client, vpc_id, "10.0.2.0/24")
 puts public_subnet_id
-exit
 
 #
 # Get the security groups for launching public and private instances
@@ -48,9 +47,11 @@ sg_infos = ec2Client.describe_security_groups({
       :values => [vpc_id]
     }
   ]
-})[:security_group_info]
+})[:security_groups]
 
-launch_sg_id = (sg_infos.select { |sg| sg[:group_name] == "nat_sg"}).first[:group_id]
+
+launch_sg_id = (sg_infos.select { |sg| sg[:group_name] == "sg_nat"}).first[:group_id]
+
 
 
 

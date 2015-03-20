@@ -23,7 +23,7 @@ unless vpc_id && dbname && snapshot_id
   exit 1
 end
 
-ec2Client = AWS::EC2::Client::new
+ec2Client = Aws::EC2::Client.new
 
 
 # Grab the private subnets. Note this assumes we know the subnets we
@@ -39,11 +39,15 @@ subnet_infos = ec2Client.describe_subnets({
       :values => ["10.0.1.0/24", "10.0.3.0/24"]
     }
   ]
-})[:subnet_set]
+})[:subnets]
 
 subnet_ids = subnet_infos.map do |subnet|
   subnet[:subnet_id]
 end
+
+puts subnet_ids
+
+exit
 
 # Need the security group name
 sg_infos = ec2Client.describe_security_groups({

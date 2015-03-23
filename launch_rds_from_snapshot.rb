@@ -47,7 +47,7 @@ end
 
 puts subnet_ids
 
-exit
+
 
 # Need the security group name
 sg_infos = ec2Client.describe_security_groups({
@@ -57,12 +57,16 @@ sg_infos = ec2Client.describe_security_groups({
           :values => [vpc_id]
       }
     ]
-})[:security_group_info]
+})[:security_groups]
+
 
 private_launch_sg = (sg_infos.select {
     |sg| sg[:group_name] == "sqlnet-sg"
   }).first[:group_id]
 
+  puts private_launch_sg
+
+exit
 
 # Create an RDS subnet group containing the two private subnets
 rdsClient = AWS::RDS::Client::new

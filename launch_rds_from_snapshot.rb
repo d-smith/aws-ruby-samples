@@ -64,12 +64,12 @@ private_launch_sg = (sg_infos.select {
     |sg| sg[:group_name] == "sqlnet-sg"
   }).first[:group_id]
 
-  puts private_launch_sg
+puts private_launch_sg
 
-exit
+
 
 # Create an RDS subnet group containing the two private subnets
-rdsClient = AWS::RDS::Client::new
+rdsClient = Aws::RDS::Client::new
 
 db_subnet_group_name = dbname + "-subnet-group"
 
@@ -89,15 +89,18 @@ rdsCreateDB = rdsClient.restore_db_instance_from_db_snapshot({
     :db_subnet_group_name => db_subnet_group_name,
     :multi_az => false,
     :publicly_accessible => false
-})[:db_instance_identifier]
+})[:db_instance][:db_instance_identifier]
+
+
 
 # Wait for the db state to be available
 wait_for_available_db(rdsClient, dbname)
 
 # Update the security group
-updated_sgs = rdsClient.modify_db_instance({
+puts "Update vpc security group"
+rdsClient.modify_db_instance({
     :db_instance_identifier => dbname,
     :vpc_security_group_ids => [private_launch_sg]
-})[:vpc_security_groups]
+})
 
-puts updated_sgs
+puts "Done"

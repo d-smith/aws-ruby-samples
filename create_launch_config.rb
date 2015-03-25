@@ -37,7 +37,7 @@ puts "private launch security group id #{private_launch_sg}"
 
 
 asgClient = Aws::AutoScaling::Client::new
-exit
+
 
 asgClient.create_launch_configuration({
     :launch_configuration_name => "b2bnext-launch-config",

@@ -6,7 +6,7 @@ unless vpc_id
   exit 1
 end
 
-ec2Client = AWS::EC2::Client::new
+ec2Client = Aws::EC2::Client::new
 
 #Use our custom AMI id
 ami_id = 'ami-c49174ac'
@@ -25,7 +25,9 @@ sg_infos = ec2Client.describe_security_groups({
           :values => [vpc_id]
       }
     ]
-})[:security_group_info]
+})[:security_groups]
+
+
 
 private_launch_sg = (sg_infos.select {
     |sg| sg[:group_name] == "private-subnet-launch-sg"
@@ -33,8 +35,9 @@ private_launch_sg = (sg_infos.select {
 
 puts "private launch security group id #{private_launch_sg}"
 
-asgClient = AWS::AutoScaling::Client::new
 
+asgClient = Aws::AutoScaling::Client::new
+exit
 
 asgClient.create_launch_configuration({
     :launch_configuration_name => "b2bnext-launch-config",

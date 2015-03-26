@@ -7,7 +7,7 @@ unless vpc_id && load_balancer_name
   exit 1
 end
 
-ec2Client = AWS::EC2::Client::new
+ec2Client = Aws::EC2::Client::new
 
 
 # Grab the private subnets. Note this assumes we know the subnets we
@@ -23,13 +23,14 @@ subnet_infos = ec2Client.describe_subnets({
       :values => ["10.0.0.0/24", "10.0.2.0/24"]
     }
   ]
-})[:subnet_set]
+})[:subnets]
 
 subnet_ids = subnet_infos.map do |subnet|
   subnet[:subnet_id]
 end
 
 puts "subnet ids #{subnet_ids}"
+
 
 # Need the security group subnet
 sg_infos = ec2Client.describe_security_groups({
@@ -39,7 +40,7 @@ sg_infos = ec2Client.describe_security_groups({
           :values => [vpc_id]
       }
     ]
-})[:security_group_info]
+})[:security_groups]
 
 
 load_balancer_sg = (sg_infos.select {
@@ -48,11 +49,12 @@ load_balancer_sg = (sg_infos.select {
 
 puts "load balancer sg array is #{load_balancer_sg}"
 
+
 load_balancer_sg_ids = load_balancer_sg.map do |sg|
   sg[:group_id]
 end
 
-elbClient = AWS::ELB::Client::new
+elbClient = Aws::ElasticLoadBalancing::Client::new
 
 # Create the load balancer
 dns_name = elbClient.create_load_balancer({
@@ -70,6 +72,7 @@ dns_name = elbClient.create_load_balancer({
 })[:dns_name]
 
 puts "Created load balancer with DNS name #{dns_name}"
+
 
 #Add the health check
 health_check = elbClient.configure_health_check({

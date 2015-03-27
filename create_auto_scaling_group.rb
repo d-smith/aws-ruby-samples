@@ -6,7 +6,7 @@ unless vpc_id && lb_name
   exit 1
 end
 
-ec2Client = AWS::EC2::Client::new
+ec2Client = Aws::EC2::Client::new
 
 
 # Grab the private subnets. Note this assumes we know the subnets we
@@ -22,24 +22,27 @@ subnet_infos = ec2Client.describe_subnets({
       :values => ["10.0.1.0/24", "10.0.3.0/24"]
     }
   ]
-})[:subnet_set]
+})[:subnets]
 
 subnet_ids = subnet_infos.map do |subnet|
   subnet[:subnet_id]
 end
 
+
 azs = subnet_infos.map do |subnet|
   subnet[:availability_zone]
 end
+
 
 subnet_ids_str = subnet_ids.inject{|l,r| l + "," + r}
 
 puts "subnet ids: '#{subnet_ids_str}'"
 
-cw = AWS::CloudWatch::Client::new
+
+cw = Aws::CloudWatch::Client::new
 
 
-asgClient = AWS::AutoScaling::Client::V20110101::new
+asgClient = Aws::AutoScaling::Client::new
 
 group_base = "b2bnext"
 group_name = group_base + "-auto-scaling-group"
@@ -56,6 +59,8 @@ asgClient.create_auto_scaling_group({
     :health_check_grace_period => 300,
     :vpc_zone_identifier => subnet_ids_str
 })
+
+
 
 scale_up_policy_arn = asgClient.put_scaling_policy({
     :auto_scaling_group_name => group_name,
